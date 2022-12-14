@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File
-from utils import get_yolov5, get_image_from_bytes
+from utils_functions import get_yolov5, get_image_from_bytes
 from starlette.responses import Response
 import io
 from PIL import Image
@@ -25,12 +25,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# this endpoint is for checking Kubernetes’s readinessProbe and livenessProbe.
+
 @app.get('/notify/v1/health')
 def get_health():
     return dict(msg='OK')
 
 @app.post("/object-to-json")
-async def detect_food_return_json_result(file: bytes = File(...)):
+async def detect_components_return_json_result(file: bytes = File(...)):
     input_image = get_image_from_bytes(file)
     results = model(input_image)
     detect_res = results.pandas().xyxy[0].to_json(orient="records")
@@ -38,12 +40,12 @@ async def detect_food_return_json_result(file: bytes = File(...)):
     return {"result": detect_res}
 
 @app.post("/object-to-img")
-async def detect_food_return_base64_img(file: bytes = File(...)):
+async def detect_components_return_base64_img(file: bytes = File(...)):
     input_image = get_image_from_bytes(file)
     results = model(input_image)
     results.render()  # updates results.imgs with boxes and labels
-    for img in results.imgs:
+    for img in results.ims:
         bytes_io = io.BytesIO()
         img_base64 = Image.fromarray(img)
         img_base64.save(bytes_io, format="jpeg")
-    return Response(content=bytes_io.getvalue(), media_type="image/jpeg")
+    return Response(content=bytes_io.getvalue(), media_type="image/jpg")
