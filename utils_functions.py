@@ -3,7 +3,7 @@ import torch
 import io
 
 
-def get_image_from_bytes(binary_image, max_size=1024):
+def get_image_from_bytes(binary_image, max_size=320):
     input_image =Image.open(io.BytesIO(binary_image)).convert("RGB")
     width, height = input_image.size
     resize_factor = min(max_size / width, max_size / height)
