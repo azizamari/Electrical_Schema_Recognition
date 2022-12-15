@@ -12,4 +12,4 @@ for box in dict:
         for j in range(2):
             coordinates[i][j]=min(coordinates[i][j],320)
     cv2.rectangle(img,*coordinates, 255, -1)
-cv2.imwrite('no_boxes.jpg',img)
+cv2.imwrite('no_components.jpg',img)
