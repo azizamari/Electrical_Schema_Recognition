@@ -25,11 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# this endpoint is for checking Kubernetes’s readinessProbe and livenessProbe.
-
-@app.get('/notify/v1/health')
-def get_health():
-    return dict(msg='OK')
 
 @app.post("/object-to-json")
 async def detect_components_return_json_result(file: bytes = File(...)):
